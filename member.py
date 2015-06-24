@@ -1,17 +1,10 @@
 __author__ = 'Evan'
 
 class Member:
-    chromosomes = []
 
-    def numToBinary(bottom, top, precision, num):
-        range = top - bottom
-        num -= bottom
-        #num/range = x/precision, num * precision = range * x
-        return (num * precision) / range
+    def __init__(self):
+        self.chromosomes = []
 
-    def binaryToNum(bottom, top, precision, num):
-        range = top - bottom
-        return ((range * num) / precision) + bottom
 
 
 """i = -8.0

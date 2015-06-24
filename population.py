@@ -1,22 +1,67 @@
 __author__ = 'Evan'
 
 from member import Member
+from evaluator import Evaluator
+import random
+import operator
 
 class Population:
 
-    def crossover(m1, m2, radix, bits):
+    def __init__(self, popSize=10, populate=False):
+        self.__size = popSize
+        self.__members = [None] * self.__size
+        self.__eval = Evaluator()
+        if (populate):
+            self.__populate(1, 8)
+
+    def __populate(self, numChromosomes, numGenes, seed=-1):
+        if (seed > 0):
+            random.seed(seed)
+        for i in range(self.__size):
+            m = Member()
+            for j in range(numChromosomes):
+                m.chromosomes.append(random.randrange(0, 1 << numGenes))
+            self.__members[i] = m
+
+    def nextGeneration(self):
+        nextGen = self.__select()
+        children = []
+        for i in range(int(self.__size / 2)):
+            p1 = random.randrange(len(nextGen))
+            p2 = random.randrange(len(nextGen))
+            while(p2 == p1):
+                p2 = random.randrange(len(nextGen))
+            m = self.crossover(nextGen[p1], nextGen[p2], random.randrange(7), 8)[1]
+            if (random.randrange(10) == 0):
+                m.chromosomes[0] = self.mutate(m.chromosomes[0], random.randrange(8))
+            children.append(m)
+        self.__members = nextGen + children
+
+    def __select(self):
+        evals = {}
+        for i in range(len(self.__members)):
+            #print(self.__eval.evaluate(self.__members[i]))
+            evals.update({i:self.__eval.evaluate(self.__members[i])})
+        sort = sorted(evals.items(), key=operator.itemgetter(1))
+        newPop = []
+        for i in range(int(self.__size / 2)):
+            newPop.append(self.__members[sort.pop()[0]])
+        return newPop
+
+
+
+    def crossover(self, m1, m2, radix, bits):
         # Convert all of the chromosomes in each member to a single binary number
         n1 = n2 = 0
         for i in range(len(m1.chromosomes)): # Each member should have the same number of chromosomes
-            n1 += m1.chromosomes[i] * (2 ** i)
-            n2 += m2.chromosomes[i] * (2 ** i)
+            n1 += m1.chromosomes[i] * (2 ** (i * bits))
+            n2 += m2.chromosomes[i] * (2 ** (i * bits))
         totalBits = bits * len(m1.chromosomes)
         if ((n1 > 2 ** totalBits) or (n2 > 2 ** totalBits)):
             return -1
         mask = (2 ** totalBits) - 1
         lm = mask >> totalBits - radix
-        um = mask << totalBits
-        print("lm:",bin(lm),"um:",bin(um))
+        um = mask << radix
         cn1 = (n1 & lm) | (n2 & um)
         cn2 = (n1 & um) | (n2 & lm)
         # Convert back to members
@@ -26,23 +71,39 @@ class Population:
         for i in range(len(m1.chromosomes)):
             cm1.chromosomes.append(cn1 & mask)
             cm2.chromosomes.append(cn2 & mask)
-            cm1 >> bits - 1
-            cm2 >> bits - 1
+            cn1 >>= bits
+            cn2 >>= bits
         return [cm1, cm2]
 
-    def mutate(n, radix):
+    def mutate(self, n, radix):
         mask = 2 ** radix
         if (n & mask == 0):
             return (n + mask)
         else:
             return (n - mask)
 
-p = Population()
+    def getSize(self):
+        return self.__size
+
+    def getMember(self, index):
+        return self.__members[index]
+
+    def setMember(self, index, member):
+        if (member is Member):
+            self.__members[index] = member
+
+    def getEvaluator(self):
+        return self.__eval
+
+"""p = Population()
 m1 = Member()
 m1.chromosomes.append(255)
 m1.chromosomes.append(255)
 m2 = Member()
 m2.chromosomes.append(0)
 m2.chromosomes.append(0)
-children = p.crossover(m1, m2, 8, 8)
-print("Child One:",bin(children[0].chromosomes))
+print(m1.chromosomes)
+print(m2.chromosomes)
+children = p.crossover(m1, m2, 11, 8)
+print("Child One:",bin(children[0].chromosomes[0]),bin(children[0].chromosomes[1]))
+print("Child Two: ",bin(children[1].chromosomes[0]), bin(children[1].chromosomes[1]))"""
