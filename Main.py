@@ -23,5 +23,7 @@ for i in range(MAX_GENERATIONS):
         sum += population.getEvaluator().evaluate(population.getMember(i))
     print("GENERATION",i,"AVERAGE:",sum / POPULATION_SIZE)
 for i in range(population.getSize()):
+    print(population.getEvaluator().binaryToNum(0,20,population.getBits(),population.getMember(i).chromosomes[0]))
     print(population.getEvaluator().evaluate(population.getMember(i)))
+
 

@@ -11,8 +11,9 @@ class Population:
         self.__size = popSize
         self.__members = [None] * self.__size
         self.__eval = Evaluator()
+        self.__BITS = self.__eval.getBits()
         if (populate):
-            self.__populate(1, 8)
+            self.__populate(1, self.__BITS)
 
     def __populate(self, numChromosomes, numGenes, seed=-1):
         if (seed > 0):
@@ -31,9 +32,9 @@ class Population:
             p2 = random.randrange(len(nextGen))
             while(p2 == p1):
                 p2 = random.randrange(len(nextGen))
-            m = self.crossover(nextGen[p1], nextGen[p2], random.randrange(7), 8)[1]
+            m = self.crossover(nextGen[p1], nextGen[p2], random.randrange(self.__BITS - 1), self.__BITS)[1]
             if (random.randrange(10) == 0):
-                m.chromosomes[0] = self.mutate(m.chromosomes[0], random.randrange(8))
+                m.chromosomes[0] = self.mutate(m.chromosomes[0], random.randrange(self.__BITS))
             children.append(m)
         self.__members = nextGen + children
 
@@ -94,6 +95,9 @@ class Population:
 
     def getEvaluator(self):
         return self.__eval
+
+    def getBits(self):
+        return self.__BITS
 
 """p = Population()
 m1 = Member()
