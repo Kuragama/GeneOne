@@ -6,18 +6,16 @@ import math
 class Evaluator:
 
     def __init__(self):
-        self.__MIN = 0
-        self.__MAX = 20
+        self.__MIN = -8
+        self.__MAX = 5
         self.__BITS = 32
 
     def evaluate(self, member):
         x = self.binaryToNum(self.__MIN, self.__MAX, self.__BITS, member.chromosomes[0])
+        y = self.binaryToNum(self.__MIN, self.__MAX, self.__BITS, member.chromosomes[1])
         #print("X:",x,"from",member.chromosomes[0])
-        return 4 * x + math.sin(x) - math.cos(2 * x) - 0.2 * (x ** 2)
-        #return math.sin(x) + 2 * math.cos(3 * x) + 3 * math.sin(2 * x) - 0.1 * x ** 2 + 0.05 * x ** 2.5
-        #return math.sin(math.e ** x) + math.cos(x)
-        #return -(x ** 2) + (3 * x) + 4
-        #return math.sin(x) + (0.7 * x * math.cos(x) * math.sin(x ** 2))
+        return math.sin(x) - (y ** 2) / 10 - (x ** 2) / 10
+        #return math.sin(x) + math.cos(y) + 0.1 * x * y
 
     def numToBinary(self, bottom, top, precision, num):
         range = top - bottom

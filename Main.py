@@ -20,10 +20,10 @@ for i in range(MAX_GENERATIONS):
     population.nextGeneration()
     sum = 0
     for j in range(population.getSize()):
-        sum += population.getEvaluator().evaluate(population.getMember(i))
+        sum += population.getEvaluator().evaluate(population.getMember(j))
     print("GENERATION",i,"AVERAGE:",sum / POPULATION_SIZE)
 for i in range(population.getSize()):
-    print(population.getEvaluator().binaryToNum(0,20,population.getBits(),population.getMember(i).chromosomes[0]))
+    print(population.getEvaluator().binaryToNum(-8,5,population.getBits(),population.getMember(i).chromosomes[0]),population.getEvaluator().binaryToNum(-8,5,population.getBits(),population.getMember(i).chromosomes[1]))
     print(population.getEvaluator().evaluate(population.getMember(i)))
 
 

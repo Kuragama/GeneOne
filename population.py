@@ -22,6 +22,7 @@ class Population:
             m = Member()
             for j in range(numChromosomes):
                 m.chromosomes.append(random.randrange(0, 1 << numGenes))
+                m.chromosomes.append(random.randrange(0, 1 << numGenes))
             self.__members[i] = m
 
     def nextGeneration(self):
@@ -34,7 +35,8 @@ class Population:
                 p2 = random.randrange(len(nextGen))
             m = self.crossover(nextGen[p1], nextGen[p2], random.randrange(self.__BITS - 1), self.__BITS)[1]
             if (random.randrange(10) == 0):
-                m.chromosomes[0] = self.mutate(m.chromosomes[0], random.randrange(self.__BITS))
+                #m.chromosomes[0] = self.mutate(m.chromosomes[0], random.randrange(self.__BITS))
+                m = self.mutate(m, random.randrange(self.__BITS * len(m.chromosomes)), self.__BITS)
             children.append(m)
         self.__members = nextGen + children
 
@@ -76,12 +78,21 @@ class Population:
             cn2 >>= bits
         return [cm1, cm2]
 
-    def mutate(self, n, radix):
+    def mutate(self, m, radix, bits):
+        n = 0
+        for i in range(len(m.chromosomes)): # Each member should have the same number of chromosomes
+            n += m.chromosomes[i] * (2 ** (i * bits))
         mask = 2 ** radix
         if (n & mask == 0):
-            return (n + mask)
+            n += mask
         else:
-            return (n - mask)
+            n -= mask
+        cm = Member()
+        mask = (2 ** bits) - 1
+        for i in range(len(m.chromosomes)):
+            cm.chromosomes.append(n & mask)
+            n >>= bits
+        return cm
 
     def getSize(self):
         return self.__size
